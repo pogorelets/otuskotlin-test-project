@@ -1,0 +1,455 @@
+openapi: 3.0.1
+info:
+  title: "Microblog ${VERSION_APP}"
+  description: This is a microblog
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/v1
+tags:
+  - name: tip
+    description: Совет (комментарий)
+paths:
+  /tip/create:
+    post:
+      tags:
+        - tip
+      summary: Create tip
+      operationId: tipCreate
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipCreateRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipCreateResponse'
+  /tip/read:
+    post:
+      tags:
+        - tip
+      summary: Read tip
+      operationId: tipRead
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipReadRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipReadResponse'
+  /tip/update:
+    post:
+      tags:
+        - tip
+      summary: Update tip
+      operationId: tipdUpdate
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipUpdateRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipUpdateResponse'
+  /tip/delete:
+    post:
+      tags:
+        - tip
+      summary: Delete tip
+      operationId: tipDelete
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipDeleteRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipDeleteResponse'
+  /tip/search:
+    post:
+      tags:
+        - tip
+      summary: Search tip
+      operationId: tipSearch
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipSearchRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipSearchResponse'
+  /tip/offers:
+    post:
+      tags:
+        - tip
+      summary: Search offers
+      operationId: tipOffers
+      requestBody:
+        description: Request body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TipOffersRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TipOffersResponse'
+
+components:
+  schemas:
+
+    IRequest:
+      type: object
+      description: Базовый интерфейс для всех запросов
+      properties:
+        requestType:
+          type: string
+          description: Поле-дескриминатор для вычисления типа запроса
+          example: create
+        requestId:
+          type: string
+          description: Идентификатор запроса для отладки
+      discriminator:
+        propertyName: requestType
+        mapping:
+          create: '#/components/schemas/TipCreateRequest'
+          read:   '#/components/schemas/TipReadRequest'
+          update: '#/components/schemas/TipUpdateRequest'
+          delete: '#/components/schemas/TipDeleteRequest'
+          search: '#/components/schemas/TipSearchRequest'
+          offers: '#/components/schemas/TipOffersRequest'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        group:
+          type: string
+        field:
+          type: string
+        message:
+          type: string
+
+    ResponseResult:
+      type: string
+      enum:
+        - success
+        - error
+
+    IResponse:
+      type: object
+      description: Базовый интерфейс для всех ответов
+      properties:
+        responseType:
+          type: string
+          description: Поле-дескриминатор для вычисления типа запроса
+          example: create
+        requestId:
+          type: string
+          description: Идентификатор запроса для отладки
+        result:
+          $ref: '#/components/schemas/ResponseResult'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+
+      discriminator:
+        propertyName: responseType
+        mapping:
+          create: '#/components/schemas/TipCreateResponse'
+          read:   '#/components/schemas/TipReadResponse'
+          update: '#/components/schemas/TipUpdateResponse'
+          delete: '#/components/schemas/TipDeleteResponse'
+          search: '#/components/schemas/TipSearchResponse'
+          offers: '#/components/schemas/TipOffersResponse'
+          init: '#/components/schemas/TipInitResponse'
+
+
+    UserId:
+      type: string
+      description: Идентификатор пользователя
+    TipId:
+      type: string
+      description: Идентификатор комментария (совета))
+    TipLock:
+      type: string
+      description: Версия оптимистичной блокировки
+
+    BaseTip:
+      type: object
+      description: Объект описывает свойства, одинаковые для create и update
+      properties:
+        title:
+          type: string
+          description:  Тема/заголовок комментария/совета
+        description:
+          type: string
+          description: Текст комментария/совета
+        user:
+          type: string
+          description: Пользователь, оставивший комментарий/совет
+        countLikes:
+          type: integer
+          description: Количество лайков
+        countDislikes:
+          type: integer
+          description: Количество дислайков
+        datePublic:
+          type: string
+          description: Дата публикации
+
+    TipInitResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    TipCreateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseTip'
+
+    TipCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/TipRequestDebug'
+        - type: object
+          properties:
+            tip:
+              $ref: '#/components/schemas/TipCreateObject'
+
+    TipReadObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/TipId'
+
+    TipReadRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/TipRequestDebug'
+        - type: object
+          properties:
+            tip:
+              $ref: '#/components/schemas/TipReadObject'
+
+    TipUpdateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseTip'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/TipId'
+            lock:
+              $ref: '#/components/schemas/TipLock'
+
+    TipUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/TipRequestDebug'
+        - type: object
+          properties:
+            tip:
+              $ref: '#/components/schemas/TipUpdateObject'
+
+    TipDeleteObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/TipId'
+            lock:
+              $ref: '#/components/schemas/TipLock'
+
+    TipDeleteRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/TipRequestDebug'
+        - type: object
+          properties:
+            tip:
+              $ref: '#/components/schemas/TipDeleteObject'
+
+    TipSearchFilter:
+      type: object
+      description: Набор фильтров для поиска
+      properties:
+        searchString:
+          type: string
+          description: Поисковая строка, которая будет искаться в комментариях
+        searchDate:
+          type: string
+          description: Дата публикации комментария
+        searchPopular:
+          type: boolean
+          description: Сначало популярные
+
+
+    TipSearchRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/TipRequestDebug'
+        - type: object
+          properties:
+            tipFilter:
+              $ref: '#/components/schemas/TipSearchFilter'
+
+    TipOffersObject:
+      $ref: '#/components/schemas/TipReadObject'
+
+    TipOffersRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/TipRequestDebug'
+        - type: object
+          properties:
+            tip:
+              $ref: '#/components/schemas/TipOffersObject'
+
+    TipResponseObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseTip'
+        - type: object
+          description: Объект, который возвращается в ответе бэкенда
+          properties:
+            id:
+              $ref: '#/components/schemas/TipId'
+            ownerId:
+              $ref: '#/components/schemas/UserId'
+            lock:
+              $ref: '#/components/schemas/TipLock'
+            permissions:
+              type: array
+              uniqueItems: true
+              items:
+                $ref: '#/components/schemas/TipPermissions'
+
+    TipPermissions:
+      type: string
+      description: Доступы для клиента для операций над комментариями
+      enum:
+        - read
+        - update
+        - delete
+
+    TipResponseSingle:
+      allOf:
+        - type: object
+          description: Ответ с одним объектом комментария
+          properties:
+            tip:
+              $ref: '#/components/schemas/TipResponseObject'
+
+    TipResponseMulti:
+      allOf:
+        - type: object
+          description: Список найденных объектов
+          properties:
+            tips:
+              type: array
+              items:
+                $ref: '#/components/schemas/TipResponseObject'
+
+    TipCreateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/TipResponseSingle'
+
+    TipReadResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/TipResponseSingle'
+
+    TipUpdateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/TipResponseSingle'
+
+    TipDeleteResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/TipResponseSingle'
+
+    TipSearchResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/TipResponseMulti'
+
+    TipOffersResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/TipResponseSingle'
+        - $ref: '#/components/schemas/TipResponseMulti'
+
+    # STUBS ======================
+    TipRequestDebugMode:
+      type: string
+      enum:
+        - prod
+        - test
+        - stub
+
+    TipRequestDebug:
+      type: object
+      properties:
+        debug:
+          $ref: '#/components/schemas/TipDebug'
+
+    TipDebug:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/TipRequestDebugMode'
+        stub:
+          $ref: '#/components/schemas/TipRequestDebugStubs'
+
+    TipRequestDebugStubs:
+      type: string
+      description: Перечисления всех стабов
+      enum:
+        - success
+        - notFound
+        - badId
+        - badTitle
+        - badDescription
+        - cannotDelete
+        - badSearchString
+        - badSearchDate

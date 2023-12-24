@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-group = "ro.otus.otuskotlin"
+group = "ru.otus.otuskotlin"
 version = "1.0-SNAPSHOT"
 
 repositories {
