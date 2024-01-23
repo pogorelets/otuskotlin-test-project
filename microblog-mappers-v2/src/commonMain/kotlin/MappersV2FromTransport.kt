@@ -12,7 +12,6 @@ fun McblContext.fromTransport(request: IRequest) = when (request) {
     is TipUpdateRequest -> fromTransport(request)
     is TipDeleteRequest -> fromTransport(request)
     is TipSearchRequest -> fromTransport(request)
-    is TipOffersRequest -> fromTransport(request)
     else -> throw UnknownRequestClass(request::class)
 }
 
@@ -78,15 +77,6 @@ fun McblContext.fromTransport(request: TipSearchRequest) {
     workMode = request.debug.transportToWorkMode()
     stubCase = request.debug.transportToStubCase()
 }
-
-fun McblContext.fromTransport(request: TipOffersRequest) {
-    command = McblCommand.OFFERS
-    requestId = request.requestId()
-    tipRequest = request.tip?.id.toTipWithId()
-    workMode = request.debug.transportToWorkMode()
-    stubCase = request.debug.transportToStubCase()
-}
-
 private fun TipSearchFilter?.toInternal(): McblTipFilter = McblTipFilter(
     searchString = this?.searchString ?: "",
     searchDate =this?.searchDate?: "",
