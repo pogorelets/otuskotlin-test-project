@@ -11,7 +11,6 @@ fun McblContext.toTransportAd(): IResponse = when (val cmd = command) {
     McblCommand.UPDATE -> toTransportUpdate()
     McblCommand.DELETE -> toTransportDelete()
     McblCommand.SEARCH -> toTransportSearch()
-    McblCommand.OFFERS -> toTransportOffers()
     McblCommand.NONE -> throw UnknownMcblCommand(cmd)
 }
 
