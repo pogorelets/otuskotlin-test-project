@@ -5,12 +5,14 @@ import ru.otus.otuskotlin.common.McblContext
 import ru.otus.otuskotlin.common.models.*
 import ru.otus.otuskotlin.mappers.v1.exceptions.UnknownMcblCommand
 
-fun McblContext.toTransportAd(): IResponse = when (val cmd = command) {
+fun McblContext.toTransportTip(): IResponse = when (val cmd = command) {
     McblCommand.CREATE -> toTransportCreate()
     McblCommand.READ -> toTransportRead()
     McblCommand.UPDATE -> toTransportUpdate()
     McblCommand.DELETE -> toTransportDelete()
     McblCommand.SEARCH -> toTransportSearch()
+    McblCommand.INIT -> toTransportInit()
+    McblCommand.FINISH -> throw UnknownMcblCommand(cmd)
     McblCommand.NONE -> throw UnknownMcblCommand(cmd)
 }
 

@@ -1,26 +1,25 @@
 package ru.otus.otuskotlin.app.ktor.v2
 
+import McblAppSettings
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-import ru.otus.otuskotlin.microblog.biz.McblTipProcessor
 
-
-fun Route.v2Tip(processor: McblTipProcessor) {
+fun Route.v2Tip(appSettings: McblAppSettings) {
     route("tip") {
         post("create") {
-            call.createTip(processor)
+            call.createTip(appSettings)
         }
         post("read") {
-            call.readTip(processor)
+            call.readTip(appSettings)
         }
         post("update") {
-            call.updateTip(processor)
+            call.updateTip(appSettings)
         }
         post("delete") {
-            call.deleteTip(processor)
+            call.deleteTip(appSettings)
         }
         post("search") {
-            call.searchTip(processor)
+            call.searchTip(appSettings)
         }
     }
 }
