@@ -15,6 +15,9 @@ plugins {
     id("io.ktor.plugin")
     id("com.bmuschko.docker-remote-api")
 }
+dependencies {
+    implementation(project(mapOf("path" to ":microblog-app-common")))
+}
 
 application {
     mainClass.set("io.ktor.server.cio.EngineMain")
@@ -68,6 +71,7 @@ kotlin {
                 implementation(ktorServer("content-negotiation"))
                 implementation(ktorServer("websockets"))
                 implementation(project(":microblog-common"))
+                implementation(project(":microblog-app-common"))
                 implementation(project(":microblog-biz"))
 
                 // v2 api
@@ -90,6 +94,7 @@ kotlin {
 
                 implementation(ktorServer("test-host"))
                 implementation(ktorClient("content-negotiation"))
+                implementation(ktorClient("websockets"))
             }
         }
 

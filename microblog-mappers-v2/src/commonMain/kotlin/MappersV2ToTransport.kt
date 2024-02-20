@@ -11,6 +11,8 @@ fun McblContext.toTransportTip(): IResponse = when (val cmd = command) {
     McblCommand.UPDATE -> toTransportUpdate()
     McblCommand.DELETE -> toTransportDelete()
     McblCommand.SEARCH -> toTransportSearch()
+    McblCommand.INIT -> toTransportInit()
+    McblCommand.FINISH -> throw UnknownMcblCommand(cmd)
     McblCommand.NONE -> throw UnknownMcblCommand(cmd)
 }
 
@@ -43,13 +45,6 @@ fun McblContext.toTransportDelete() = TipDeleteResponse(
 )
 
 fun McblContext.toTransportSearch() = TipSearchResponse(
-    requestId = this.requestId.asString().takeIf { it.isNotBlank() },
-    result = if (state == McblState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
-    errors = errors.toTransportErrors(),
-    tips = tipsResponse.toTransportTip()
-)
-
-fun McblContext.toTransportOffers() = TipOffersResponse(
     requestId = this.requestId.asString().takeIf { it.isNotBlank() },
     result = if (state == McblState.RUNNING) ResponseResult.SUCCESS else ResponseResult.ERROR,
     errors = errors.toTransportErrors(),

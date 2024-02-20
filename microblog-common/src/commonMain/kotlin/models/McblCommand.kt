@@ -7,4 +7,6 @@ enum class McblCommand {
     UPDATE,
     DELETE,
     SEARCH,
+    INIT,
+    FINISH
 }
