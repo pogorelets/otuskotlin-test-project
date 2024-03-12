@@ -10,4 +10,6 @@ data class McblTip(
     var ownerId: McblTipOwnerId = McblTipOwnerId.NONE,
     var lock: McblTipLock = McblTipLock.NONE,
     val permissions: MutableSet<McblTipPermissionClient> = mutableSetOf()
-)
+){
+    fun deepCopy(): McblTip = copy()
+}

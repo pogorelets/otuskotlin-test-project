@@ -1,0 +1,117 @@
+package stub
+
+import kotlinx.coroutines.test.runTest
+import ru.otus.otuskotlin.common.McblContext
+import ru.otus.otuskotlin.common.models.*
+import ru.otus.otuskotlin.common.stubs.McblStubs
+import ru.otus.otuskotlin.microblog.biz.McblTipProcessor
+import ru.otus.otuskotlin.microblog.stubs.McblTipStubs
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class TipCreatedStubTest {
+
+    private val processor = McblTipProcessor()
+    val id = McblTipId("123")
+    val title = "Тeма"
+    val description = "Описание топика"
+    val user = "IronMan"
+
+    @Test
+    fun create() = runTest {
+
+        val ctx = McblContext(
+            command = McblCommand.CREATE,
+            state = McblState.NONE,
+            workMode = McblWorkMode.STUB,
+            stubCase = McblStubs.SUCCESS,
+            tipRequest = McblTip(
+                id = id,
+                title = title,
+                description = description,
+                user = user
+            ),
+        )
+        processor.exec(ctx)
+        assertEquals(McblTipStubs.get().id, ctx.tipResponse.id)
+        assertEquals(title, ctx.tipResponse.title)
+        assertEquals(description, ctx.tipResponse.description)
+        assertEquals(user, ctx.tipResponse.user)
+    }
+
+    @Test
+    fun badTitle() = runTest {
+        val ctx = McblContext(
+            command =McblCommand.CREATE,
+            state = McblState.NONE,
+            workMode = McblWorkMode.STUB,
+            stubCase = McblStubs.BAD_TITLE,
+            tipRequest = McblTip(
+                id = id,
+                title = "",
+                description = description,
+                user = user
+            ),
+        )
+        processor.exec(ctx)
+        assertEquals(McblTip(), ctx.tipResponse)
+        assertEquals("title", ctx.errors.firstOrNull()?.field)
+        assertEquals("validation", ctx.errors.firstOrNull()?.group)
+    }
+
+    @Test
+    fun badDescription() = runTest {
+        val ctx = McblContext(
+            command =McblCommand.CREATE,
+            state = McblState.NONE,
+            workMode = McblWorkMode.STUB,
+            stubCase = McblStubs.BAD_DESCRIPTION,
+            tipRequest = McblTip(
+                id = id,
+                title = title,
+                description = "",
+                user = user
+            ),
+        )
+        processor.exec(ctx)
+        assertEquals(McblTip(), ctx.tipResponse)
+        assertEquals("description", ctx.errors.firstOrNull()?.field)
+        assertEquals("validation", ctx.errors.firstOrNull()?.group)
+    }
+
+    @Test
+    fun databaseError() = runTest {
+        val ctx = McblContext(
+            command =McblCommand.CREATE,
+            state = McblState.NONE,
+            workMode = McblWorkMode.STUB,
+            stubCase = McblStubs.DB_ERROR,
+            tipRequest = McblTip(
+                id = id,
+            ),
+        )
+        processor.exec(ctx)
+        assertEquals(McblTip(), ctx.tipResponse)
+        assertEquals("internal", ctx.errors.firstOrNull()?.group)
+    }
+
+    @Test
+    fun badNoCase() = runTest {
+        val ctx = McblContext(
+            command =McblCommand.CREATE,
+            state = McblState.NONE,
+            workMode = McblWorkMode.STUB,
+            stubCase = McblStubs.BAD_ID,
+            tipRequest = McblTip(
+                id = id,
+                title = title,
+                description = description,
+                user = user,
+            ),
+        )
+        processor.exec(ctx)
+        assertEquals(McblTip(), ctx.tipResponse)
+        assertEquals("stub", ctx.errors.firstOrNull()?.field)
+        assertEquals("validation", ctx.errors.firstOrNull()?.group)
+    }
+}

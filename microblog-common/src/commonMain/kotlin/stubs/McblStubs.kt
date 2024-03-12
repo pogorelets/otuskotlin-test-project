@@ -10,4 +10,5 @@ enum class McblStubs {
     CANNOT_DELETE,
     BAD_SEARCH_STRING,
     BAD_SEARCH_DATE,
+    DB_ERROR
 }

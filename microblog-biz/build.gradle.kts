@@ -16,6 +16,9 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 implementation(project(":microblog-common"))
                 implementation(project(":microblog-stubs"))
+
+                val kotlinCorVersion: String by project
+                implementation("com.crowdproj:kotlin-cor:$kotlinCorVersion")
             }
         }
         commonTest {
